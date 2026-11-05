@@ -1,0 +1,30 @@
+import socket
+from urllib.parse import urlsplit
+
+#Scripts
+import port_analyzer
+
+#Test
+import time
+
+def Get_IP(URL):
+    hostname = urlsplit(URL).hostname
+    ip = socket.gethostbyname(hostname)
+    return ip
+
+def main(URL):    
+    print("Running...")
+
+    port_range = "1-65535"
+
+    start_time = time.perf_counter()
+    result = port_analyzer.Get_Open_Ports("127.0.0.1", str(port_range))
+    end_time = time.perf_counter()
+    for port in result:
+        print(port)
+    print(f"Time took: {end_time - start_time} seconds")
+
+
+
+
+main("http://127.0.0.1:5000")
