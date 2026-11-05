@@ -1,23 +1,22 @@
+import json
+from pathlib import Path
 
-{
-  "msrpc": {
-    "severity": "medium",
-    "description": "Windows RPC service is exposed.",
-    "recommendation": "Restrict RPC access to trusted networks."
-  },
-  "microsoft-ds": {
-    "severity": "high",
-    "description": "SMB file sharing is exposed.",
-    "recommendation": "Block public SMB access unless required."
-  },
-  "telnet": {
-    "severity": "high",
-    "description": "Telnet uses unencrypted communication.",
-    "recommendation": "Replace Telnet with SSH."
-  },
-  "ftp": {
-    "severity": "high",
-    "description": "FTP may transmit credentials in plaintext.",
-    "recommendation": "Use SFTP or FTPS."
-  }
-}
+CONFIG_PATH = (Path(__file__).resolve().parent/ "config"/ "ports"/ "sensitive_services.json")
+
+def Load_Rules():
+    with open(CONFIG_PATH, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+def Analyze_Ports(OPEN_PORTS):
+    rules = Load_Rules()
+    analyzed_results = []
+    for port in OPEN_PORTS:
+        if port["service"].lower() in rules:
+            analyzed_port_object = {
+                "port": port["port"],
+                "service": port["service"],
+                "status": "review",
+                **rules[port["service"]]
+            }
+            analyzed_results.append(analyzed_port_object)
+    return(analyzed_results)

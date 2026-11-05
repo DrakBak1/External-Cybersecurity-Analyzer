@@ -2,6 +2,7 @@ import socket
 from urllib.parse import urlsplit
 
 #Scripts
+import port_getter
 import port_analyzer
 
 #Test
@@ -18,11 +19,17 @@ def main(URL):
     port_range = "1-65535"
 
     start_time = time.perf_counter()
-    result = port_analyzer.Get_Open_Ports("127.0.0.1", str(port_range))
+    open_ports = port_getter.Get_Open_Ports("127.0.0.1", str(port_range))
     end_time = time.perf_counter()
-    for port in result:
+    for port in open_ports:
         print(port)
     print(f"Time took: {end_time - start_time} seconds")
+
+    port_analysis = port_analyzer.Analyze_Ports(open_ports)
+
+    for analysis in port_analysis:
+        print(analysis)
+
 
 
 
