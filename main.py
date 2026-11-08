@@ -1,20 +1,45 @@
+
 import socket
+import sys 
 from urllib.parse import urlsplit
 
-#Scripts
 import port_getter
 import port_analyzer
+from tls_certificate_retriever import GetCertificate
+from tls_vulnerability_analyzer import Analyze_Certificate  
+from vulnerable_localhost import main as Start_Test_Website  
 
-#Test
 import time
+
 
 def Get_IP(URL):
     hostname = urlsplit(URL).hostname
     ip = socket.gethostbyname(hostname)
     return ip
 
-def main(URL):    
+
+def main(URL):
     print("Running...")
+    print(f"Target URL: {URL}")
+
+    print("\nTLS Certificate")
+
+    try:
+        certificate = GetCertificate(URL)
+
+        print("Certificate retrieved successfully")
+        print("Subject:", certificate.subject.rfc4514_string())
+        print("Issuer:", certificate.issuer.rfc4514_string())
+        print("Serial Number:", certificate.serial_number)
+        print("Valid From:", certificate.not_valid_before_utc)
+        print("Valid Until:", certificate.not_valid_after_utc)
+
+        analysis = Analyze_Certificate(certificate)  
+        print("Expiration Status:", analysis["status"])  
+        print("Expired:", analysis["is_expired"])  
+
+    except (ValueError, RuntimeError) as error:
+        print(f"Certificate retrieval failed: {error}")
 
     port_range = "1-65535"
 
@@ -31,7 +56,9 @@ def main(URL):
         print(analysis)
 
 
-
-
-
-main("http://127.0.0.1:5000")
+if __name__ == "__main__":  
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-server":  
+        Start_Test_Website()  
+    else:  
+        URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443"  
+        main(URL)  
