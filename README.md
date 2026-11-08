@@ -25,14 +25,18 @@ Run tests from `eca/` with `../.venv/bin/python -m pytest`.
 
 - Repository: https://github.com/Dylan-Pulley/External-Cybersecurity-Analyzer
 - Branch: `main`
-- Root directory: `eca`
+- Root directory: leave blank
 - Runtime: Python 3.12
-- Build: `pip install -r requirements.txt`
-- Start: `gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --access-logfile -`
+- Build: `pip install -r eca/requirements.txt`
+- Start: `gunicorn --chdir eca app.main:app --bind 0.0.0.0:$PORT --workers 2 --access-logfile -`
 - Health check: `/api/health`
 - Auto-deploy: After CI Checks Pass
 
-The root `render.yaml` provides these settings for Blueprint deployments.
+The root `render.yaml` provides equivalent settings for new Blueprint deployments,
+using `eca` as the root directory and commands relative to that directory.
+The existing service uses the repository root with explicit `eca` paths.
+Auto Sync on the old seed0x Blueprint is disabled to prevent it overwriting
+the service settings; do not manually sync that old Blueprint.
 Existing manually configured services must be updated in Render; adding this
 file alone does not reconfigure them. GitHub Actions runs tests for pull requests
 and main pushes. Render deploys passing main commits directly, without a deploy
