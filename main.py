@@ -1,4 +1,3 @@
-
 import socket
 import sys 
 from urllib.parse import urlsplit
@@ -26,17 +25,7 @@ def main(URL):
 
     try:
         certificate = GetCertificate(URL)
-
-        print("Certificate retrieved successfully")
-        print("Subject:", certificate.subject.rfc4514_string())
-        print("Issuer:", certificate.issuer.rfc4514_string())
-        print("Serial Number:", certificate.serial_number)
-        print("Valid From:", certificate.not_valid_before_utc)
-        print("Valid Until:", certificate.not_valid_after_utc)
-
-        analysis = Analyze_Certificate(certificate)  
-        print("Expiration Status:", analysis["status"])  
-        print("Expired:", analysis["is_expired"])  
+        analysis = Analyze_Certificate(certificate)
 
     except (ValueError, RuntimeError) as error:
         print(f"Certificate retrieval failed: {error}")
@@ -61,4 +50,4 @@ if __name__ == "__main__":
         Start_Test_Website()  
     else:  
         URL = sys.argv[1] if len(sys.argv) > 1 else "https://localhost:8443"  
-        main(URL)  
+        main(URL)
